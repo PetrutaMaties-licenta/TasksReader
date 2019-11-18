@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import FirebaseStorage
 
 class CreateAccountVC: UIViewController {
 
@@ -16,11 +17,12 @@ class CreateAccountVC: UIViewController {
     @IBOutlet weak var passwordTxt: UITextField!
     @IBOutlet weak var addressTxt: UITextField!
     @IBOutlet weak var createAccntBtn: UIButton!
-    
     @IBOutlet weak var userImg: UIImageView!
     var avatarColor = "[0.5, 0.5, 0.5, 1]"
     var bgColor : UIColor?
-    
+    var red:CGFloat?
+    var green:CGFloat?
+    var blue:CGFloat?
     
     
     override func viewDidLoad() {
@@ -33,6 +35,9 @@ class CreateAccountVC: UIViewController {
         let red = CGFloat(arc4random_uniform(255)) / 255
         let green = CGFloat(arc4random_uniform(255)) / 255
         let blue = CGFloat(arc4random_uniform(255)) / 255
+        self.red = red
+        self.green = green
+        self.blue = blue
         bgColor = UIColor(red: red, green: green, blue: blue, alpha: 1)
         UIView.animate(withDuration: 0.3) {
             self.userImg.backgroundColor = self.bgColor
@@ -48,18 +53,9 @@ class CreateAccountVC: UIViewController {
         guard let email = emailTxt.text,
             let password = passwordTxt.text,
             let name = nameTxt.text,
+//            let avatar = userImg.text,
             let adrress = addressTxt.text else { return }
-        
-        
-        
-        
-//        Auth.auth().createUser(withEmail: email, password: password)  { (user, error) in  ...  if error == nil {
-//            Auth.auth().signIn(withEmail: self.textFieldLoginEmail.text!,
-//                               password: self.textFieldLoginPassword.text!)
-//            }
-        
-        
-        
+    
         Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
             if let error = error {
                 debugPrint("Error creating user: \(error.localizedDescription)")
@@ -68,7 +64,26 @@ class CreateAccountVC: UIViewController {
                 controller.addAction(action)
                 self.present(controller, animated: true, completion: nil)
             }
-    
+            if error == nil {
+                Auth.auth().signIn(withEmail: email, password: password, completion: nil)
+            }
+        
+            
+//            let randomID = UUID.init().uuidString
+//            let uploadRef = Storage.storage().reference(withPath: "photos/\(randomID).jpg")
+//            guard let imageData = self.userImg.image?.jpegData(compressionQuality: 0.75) else { return }
+//            let uploadMetadata = StorageMetadata.init()
+//            uploadMetadata.contentType = "image/jpeg"
+//            uploadRef.putData(imageData, metadata: uploadMetadata, completion: { (downloadMetadata, error) in
+//                if let error = error {
+//                    print(error.localizedDescription)
+//                    return
+//                }
+//                print("\(downloadMetadata)")
+//            })
+
+            
+            
             let changeRequest = user?.user.createProfileChangeRequest()
             changeRequest?.displayName = name
             changeRequest?.commitChanges(completion: { (error) in
@@ -81,7 +96,7 @@ class CreateAccountVC: UIViewController {
                 }
             })
             guard let userId = user?.user.uid else { return }
-            Firestore.firestore().collection("users").document(userId).setData(["name" : name, "dateCreated": FieldValue.serverTimestamp(), "address": adrress], completion: { (error) in
+            Firestore.firestore().collection("users").document(userId).setData(["name" : name, "dateCreated": FieldValue.serverTimestamp(), "address": adrress, "red" : self.red, "green" : self.green, "blue" : self.blue ], completion: { (error) in
                 if let error = error {
                     debugPrint(error.localizedDescription)
                     let controller = UIAlertController(title: "Error", message: "\(error.localizedDescription)", preferredStyle: .alert)

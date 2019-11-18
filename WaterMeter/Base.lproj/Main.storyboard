@@ -65,7 +65,7 @@
                                 <rect key="frame" x="281" y="100" width="22" height="22"/>
                                 <state key="normal" image="addChannelButton"/>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="menuProfileIcon" translatesAutoresizingMaskIntoConstraints="NO" id="a8P-it-h1U" customClass="CircleImage" customModule="WaterMeter" customModuleProvider="target">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="profileDefault" translatesAutoresizingMaskIntoConstraints="NO" id="a8P-it-h1U" customClass="CircleImage" customModule="WaterMeter" customModuleProvider="target">
                                 <rect key="frame" x="5" y="572" width="75" height="75"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="75" id="JCG-Y1-Dzp"/>
@@ -109,6 +109,7 @@
                         <viewLayoutGuide key="safeArea" id="QhH-7u-ja1"/>
                     </view>
                     <connections>
+                        <outlet property="avatarImg" destination="a8P-it-h1U" id="auQ-bH-o3J"/>
                         <outlet property="loginBtn" destination="CID-I7-eea" id="w8U-VZ-p1A"/>
                         <segue destination="fpf-SQ-mmX" kind="show" identifier="toLogin" id="KR6-BY-gwg"/>
                     </connections>
@@ -546,7 +547,6 @@
         <image name="addChannelButton" width="22" height="22"/>
         <image name="closeButton" width="28" height="28"/>
         <image name="happy-water" width="313" height="313"/>
-        <image name="menuProfileIcon" width="99" height="99"/>
         <image name="profileDefault" width="192" height="192"/>
         <image name="smackBurger" width="40" height="40"/>
     </resources>

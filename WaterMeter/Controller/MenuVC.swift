@@ -14,8 +14,10 @@ class MenuVC: UIViewController {
 
     // Outlets
     
+    @IBOutlet weak var avatarImg: CircleImage!
     @IBOutlet weak var loginBtn: UIButton!
     @IBAction func prepareForUnwind(segue: UIStoryboardSegue){}
+     var bgColor : UIColor?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,11 +27,24 @@ class MenuVC: UIViewController {
     }
     
     func setupView() {
+       
         Auth.auth().addStateDidChangeListener() { auth, user in
             if user != nil {
-                self.loginBtn.setTitle(user?.displayName, for: .normal)
+                Firestore.firestore().collection("users").document((user?.uid)!).getDocument(completion: { (user, error) in
+                    guard let dict = user?.data(),
+                        let name = dict["name"] as? String,
+                        let red = dict["red"] as? Double,
+                        let green = dict["green"] as? Double,
+                        let blue = dict["blue"] as? Double
+                    else { return }
+                    self.avatarImg.backgroundColor = self.getColorBackFromFirebase(red: red, green: green, blue: blue)
+                    self.loginBtn.setTitle(name, for: .normal)
+        
+                })
+//                self.loginBtn.setTitle(user?.displayName, for: .normal)
             } else {
                  self.loginBtn.setTitle("Login", for: .normal)
+                self.avatarImg.backgroundColor = self.bgColor
             }
         }
         
@@ -45,6 +60,13 @@ class MenuVC: UIViewController {
         } else {
             performSegue(withIdentifier: TO_LOGIN, sender: nil)
         }
+    }
+    
+    func getColorBackFromFirebase(red: Double, green: Double, blue: Double) -> UIColor {
+        let red = CGFloat(red)
+        let green = CGFloat(green)
+        let blue = CGFloat(blue)
+        return UIColor(red: red, green: green, blue: blue, alpha: 1)
     }
     
 //    @objc func userDataChange( _ notif: Notification) {

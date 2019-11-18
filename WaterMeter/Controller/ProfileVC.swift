@@ -46,13 +46,25 @@ class ProfileVC: UIViewController {
     func setupView() {
         nameTxt.text = Auth.auth().currentUser?.displayName
         emailTxt.text = Auth.auth().currentUser?.email
-        Firestore.firestore().collection("users").document((Auth.auth().currentUser?.uid)!).getDocument { (user, error) in
-            guard let dict = user?.data() else {return}
-            let addr = dict["address"] as! String
-            let name = dict["name"] as! String
-            self.addressTxt.text = addr
+        Firestore.firestore().collection("users").document((Auth.auth().currentUser?.uid)!).getDocument { [weak self] (user, error) in
+            guard let dict = user?.data(),
+            let addr = dict["address"] as? String,
+            let name = dict["name"] as? String,
+            let red = dict["red"] as? Double,
+            let green = dict["green"] as? Double,
+            let blue = dict["blue"] as? Double
+            else { return }
+            self?.profileImg.backgroundColor = self?.getColorBackFromFirebase(red: red, green: green, blue: blue)
+            self?.addressTxt.text = addr
+            self?.nameTxt.text = name
+            
         }
-        //addressTxt.text =
     }
     
+    func getColorBackFromFirebase(red: Double, green: Double, blue: Double) -> UIColor {
+        let red = CGFloat(red)
+        let green = CGFloat(green)
+        let blue = CGFloat(blue)
+        return UIColor(red: red, green: green, blue: blue, alpha: 1)
+    }
 }
